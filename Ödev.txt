@@ -1,0 +1,124 @@
+# Mikroişlemciler: Tanım, Tarihçe, Mimariler ve Gelecek
+
+Bu belge, mikroişlemci teknolojisini temel kavramlardan güncel eğilimlere kadar ele alan bir araştırma çalışmasıdır. Önce mikroişlemcinin ne olduğunu ve nasıl çalıştığını açıklıyor, ardından tarihsel gelişimini anlatıyor, x86 ve ARM mimarilerini karşılaştırıyor, kullanım alanlarını inceliyor ve son olarak gelecekte bizi nelerin beklediğini tartışıyorum.
+
+## İçindekiler
+
+1. Mikroişlemcinin Tanımı ve Temel Bileşenleri
+2. Genel Çalışma Mantığı
+3. Tarihsel Gelişim
+4. Mimari Karşılaştırması: x86 ve ARM
+5. Günümüzdeki Kullanım Alanları
+6. Gelecek Beklentileri ve Zorluklar
+7. Sonuç
+8. Kaynakça
+
+## 1. Mikroişlemcinin Tanımı ve Temel Bileşenleri
+
+Mikroişlemci, bir bilgisayarın merkezi işlem biriminin (CPU) tek bir tümleşik devre üzerine sığdırılmış hâlidir. Programların içindeki komutları okur, bunları çözümler ve sonucunda aritmetik, mantıksal veya veri taşıma işlemleri yapar. Bir bilgisayarda görülen hemen her olay, sonunda mikroişlemcinin milyarlarca küçük komutu art arda çalıştırmasına dayanır.
+
+Mikroişlemciler birbirinden farklı görünse de üç temel yapı taşı hemen her tasarımda bulunur.
+
+**Aritmetik Mantık Birimi (ALU).** ALU, işlemcinin hesap yapan kısmıdır. Toplama, çıkarma gibi aritmetik işlemleri ve VE, VEYA, değilleme gibi mantıksal işlemleri burada gerçekleşir. İki sayıyı karşılaştırmak da ALU'nun işidir. Sonucun sıfır olup olmadığı ya da taşma olup olmadığı gibi bilgiler bayrak adı verilen küçük bitlerde saklanır ve program akışının hangi yöne gideceğine karar verirken kullanılır.
+
+**Kontrol birimi.** Kontrol birimi, işlemcinin yönetici tarafıdır. Bellekten gelen komutu çözer ve hangi birimin ne zaman çalışacağını belirleyen kontrol sinyallerini üretir. ALU'ya hangi işlemi yapacağını, belleğe okuma mı yazma mı yapılacağını söyleyen de odur. Basit bir benzetmeyle, ALU bir işçiyse kontrol birimi o işçiye iş emri veren ustabaşıdır.
+
+**Yazmaçlar (register).** Yazmaçlar, işlemcinin içindeki çok küçük ama çok hızlı depolama alanlarıdır. Üzerinde çalışılan veriler, ara sonuçlar ve adresler burada tutulur. Program sayacı (PC) bir sonraki komutun adresini, komut yazmacı o anda çalışan komutu, genel amaçlı yazmaçlar ise hesaplamalardaki verileri saklar. Ana bellek yazmaçlara göre çok daha yavaş olduğu için, ne kadar çok veri yazmaçlarda işlenirse program o kadar hızlı çalışır.
+
+Bunların yanında modern işlemcilerde önbellek (cache) hiyerarşisi, bellek yönetim birimi ve veri yolları da bulunur. Veri yolu, bileşenler arasında bilginin taşındığı hatlardır. Adres yolu, veri yolu ve kontrol yolu olarak üçe ayrılır.
+
+## 2. Genel Çalışma Mantığı
+
+Bir mikroişlemcinin çalışması, getir-çöz-yürüt (fetch-decode-execute) döngüsüne dayanır. Bu döngü işlemci açık olduğu sürece saniyede milyarlarca kez tekrarlanır.
+
+1. **Getirme.** Program sayacının gösterdiği adresteki komut bellekten okunur ve komut yazmacına alınır. Sonra program sayacı bir sonraki komutu gösterecek şekilde artırılır.
+2. **Çözme.** Kontrol birimi komutun ne anlama geldiğini çözümler. Hangi işlemin yapılacağını ve hangi yazmaç veya bellek adreslerinin kullanılacağını belirler.
+3. **Yürütme.** Gerekli sinyaller üretilir. ALU işlemi yapar, ya da bellekten veri okunur veya belleğe veri yazılır.
+4. **Sonucu yazma.** Sonuç bir yazmaca ya da belleğe kaydedilir.
+
+Tüm bu adımlar bir saat sinyali ile senkronize edilir. Saat hızı gigahertz cinsinden ölçülür. Ancak yüksek saat hızı tek başına yüksek performans demek değildir. Komut başına harcanan çevrim sayısı, işlem hattı (pipeline) verimliliği ve paralellik gibi etkenler de belirleyicidir.
+
+Performansı artırmak için modern işlemciler birkaç yöntem kullanır. İşlem hattı sayesinde bir komut yürütülürken sıradaki komutun çözümlemesi ve bir sonrakinin getirilmesi aynı anda yapılabilir. Dal tahmini, program akışı bir koşula bağlı olarak ayrıldığında hangi yolun izleneceğini önceden tahmin ederek işlemcinin boşta beklemesini önler. Süperskalar yapılarda ise aynı anda birden fazla komut yürütülür. Çok çekirdekli tasarımlarda aynı yonga üzerinde birden fazla işlem birimi bulunur ve yazılım uygun yazıldığında işler paralel yürütülür.
+
+## 3. Tarihsel Gelişim
+
+Mikroişlemcinin hikâyesi, entegre devre teknolojisinin gelişimiyle iç içedir. Öncesinde bilgisayarlar vakum tüplerinden, sonra transistörlerden oluşan ayrık parçalarla kuruluyor ve odaları dolduran makineler ortaya çıkıyordu. Entegre devrenin icadıyla çok sayıda transistörü tek bir silikon parça üzerine yerleştirmek mümkün oldu.
+
+**İlk nesil (1971 – 1970'lerin ortası).** İlk ticari mikroişlemci olarak kabul edilen Intel 4004, 1971'de tanıtıldı. 4 bitlik bir işlemciydi ve başlangıçta bir hesap makinesi için tasarlanmıştı. Yaklaşık iki bin üç yüz transistör içeriyordu. Ardından gelen Intel 8008 ve özellikle 1974 tarihli Intel 8080, işlemcilerin genel amaçlı kullanımını yaygınlaştırdı. Aynı dönemde Motorola 6800 ve MOS Technology 6502 gibi rakipler de ortaya çıktı.
+
+**16 bit dönemi ve kişisel bilgisayarlar (1978 – 1980'ler).** Intel 8086 ve onun ucuz kardeşi 8088, IBM'in ilk kişisel bilgisayarında kullanılınca x86 ailesi endüstri standardına dönüştü. 80286 ile korumalı mod, 80386 ile 32 bit mimariye geçiş ve sanal bellek desteği gibi önemli yenilikler geldi. Bu dönemde Motorola 68000 ailesi Apple Macintosh ve Amiga gibi sistemlerde kullanıldı.
+
+**RISC devrimi ve yeni fikirler (1980'ler).** Berkeley ve Stanford'daki araştırmalar, daha az sayıda ve daha basit komutla çalışan işlemcilerin pek çok durumda daha verimli olabileceğini gösterdi. Bu yaklaşım RISC (indirgenmiş komut kümeli bilgisayar) adıyla anıldı. MIPS, SPARC ve ARM gibi mimariler bu düşünceden doğdu. ARM'in kökeni ise İngiltere'deki Acorn Computers firmasının tasarladığı işlemcilere dayanır.
+
+**Süperskalar ve Pentium dönemi (1990'lar).** Intel Pentium ile süperskalar yürütme masaüstü bilgisayarlara girdi. Önbellek miktarları, işlem hatları ve saat hızları hızla arttı. Aynı dönemde rakip AMD, x86 pazarında önemli bir alternatif hâline geldi.
+
+**Çok çekirdek ve 64 bit (2000'ler).** Saat hızını artırmanın ısı ve güç tüketimi sınırlarına dayanması üzerine üreticiler yönlerini değiştirdi. Tek bir çekirdeği daha hızlı yapmak yerine aynı yongaya birden fazla çekirdek koymaya başladılar. AMD'nin 64 bit x86 uzantısı ve ardından çok çekirdekli Intel ve AMD işlemcileri bu dönemin simgesi oldu.
+
+**Mobil çağ ve günümüz (2010'lardan bugüne).** Akıllı telefonların yaygınlaşmasıyla düşük güç tüketimi ön plana çıktı ve ARM tabanlı yongalar mobil pazarın hâkimi oldu. Apple'ın 2020'de kendi ARM tabanlı M serisi yongalarına geçmesi, bu mimarinin masaüstü ve dizüstü bilgisayarlarda da rekabetçi olabileceğini gösterdi. Bugün ayrıca grafik işlemciler ve yapay zekâ hızlandırıcıları ana işlemcinin yanında önemli bir rol üstleniyor.
+
+## 4. Mimari Karşılaştırması: x86 ve ARM
+
+Günümüzde en yaygın iki mimari x86 ve ARM'dır. İkisi de çok başarılı olsa da tasarım felsefeleri farklıdır.
+
+**Komut kümesi felsefesi.** x86, CISC (karmaşık komut kümeli bilgisayar) anlayışıyla gelişmiştir. Tek bir komut, bellekten veri okuma ve işlem yapma gibi birden fazla adımı birlikte yapabilir. Komutların uzunluğu değişkendir. ARM ise RISC yaklaşımını benimser. Komutlar daha basit ve çoğunlukla sabit uzunluktadır, bellek işlemleri ile hesaplama işlemleri ayrı komutlarla yapılır (yükle-sakla mimarisi).
+
+**Çözümleme karmaşıklığı.** Değişken uzunluklu x86 komutlarını çözümlemek daha karmaşık bir devre gerektirir. Modern x86 işlemciler bu karmaşıklığı, komutları içeride daha basit mikro-işlemlere dönüştürerek aşar. ARM'in düzenli komut yapısı ise çözümlemeyi basitleştirir ve devreyi küçük tutar.
+
+**Güç verimliliği.** ARM tasarımları, daha az transistörle çalışmaya elverişli olduğu için tarihsel olarak düşük güç tüketimiyle öne çıkmıştır. Bu yüzden pil ömrünün önemli olduğu telefonlarda, tabletlerde ve gömülü sistemlerde baskındır. x86 ise uzun yıllar yüksek tek çekirdek performansına ve sunucu ile masaüstü pazarına odaklanmıştır, ancak güç verimliliği alanında da ilerleme kaydetmiştir.
+
+**Lisanslama modeli.** ARM, tasarımlarını ve komut kümesini başka şirketlere lisanslayarak ilerler. Qualcomm, Apple, Samsung gibi firmalar bu lisanslarla kendi yongalarını tasarlar. x86 ise büyük ölçüde Intel ve AMD ile sınırlıdır. Bu fark, ARM ekosisteminde daha geniş bir çeşitlilik doğurmuştur.
+
+**Yazılım uyumluluğu.** x86'nın en büyük avantajlarından biri onlarca yıllık geriye dönük uyumluluk ve çok geniş yazılım birikimidir. ARM'e geçişte ise yazılımların yeniden derlenmesi ya da çeviri katmanları üzerinden çalıştırılması gerekebilir. Bu yüzden iki mimari arasındaki geçiş, teknik olduğu kadar ekosistemle ilgili bir meseledir.
+
+Özetle x86 yüksek performans ve geniş yazılım desteğiyle, ARM ise verimlilik ve esneklikle öne çıkar. İkisinin sınırları ise giderek belirsizleşiyor. ARM tabanlı sunucu işlemcileri veri merkezlerine girerken, x86 üreticileri de verimliliği artıran hibrit çekirdek tasarımları geliştiriyor.
+
+## 5. Günümüzdeki Kullanım Alanları
+
+Mikroişlemciler artık yalnızca bilgisayarlarda değil, hayatın hemen her alanında bulunuyor.
+
+**Bilgisayarlar ve sunucular.** Kişisel bilgisayarlar, dizüstü makineler ve veri merkezlerindeki sunucular yüksek performanslı çok çekirdekli işlemcilere dayanır. Bulut hizmetlerinin arkasındaki devasa altyapı bunlarla çalışır.
+
+**Mobil cihazlar.** Akıllı telefonlar ve tabletler, işlemciyi, grafik biriminini, bellek denetleyicisini ve bağlantı birimlerini tek bir yonga üzerinde birleştiren sistem-yonga (SoC) yapılarını kullanır. Böylece hem yer hem de enerji tasarrufu sağlanır.
+
+**Gömülü sistemler.** Çamaşır makinesinden mikrodalga fırına, otomobillerin motor kontrol ünitelerinden tıbbi cihazlara kadar sayısız üründe küçük ve ucuz mikrodenetleyiciler çalışır. Bu sistemler genellikle belirli bir işi gerçek zamanlı ve güvenilir biçimde yapmak üzere tasarlanır.
+
+**Nesnelerin interneti (IoT).** Akıllı ev cihazları, sensörler ve giyilebilir teknolojiler çok düşük güçle çalışan işlemcilere ihtiyaç duyar. Bu cihazlar sürekli ağa bağlı kalarak veri toplar ve paylaşır.
+
+**Otomotiv ve endüstri.** Modern bir otomobilde onlarca, hatta yüzlerce işlemci bulunabilir. Fren sistemleri, sürücü destek özellikleri ve eğlence sistemleri bunlara dayanır. Endüstride robotlar ve otomasyon sistemleri de aynı şekilde mikroişlemcilerle yönetilir.
+
+**Yapay zekâ ve bilimsel hesaplama.** Yapay zekâ modellerinin eğitimi ve çalıştırılması için özel hızlandırıcılar kullanılıyor, ancak bunları yöneten ve veriyi hazırlayan yine ana işlemcilerdir. Süper bilgisayarlar da binlerce işlemcinin birlikte çalışmasıyla oluşur.
+
+## 6. Gelecek Beklentileri ve Zorluklar
+
+**Moore Yasası'nın sınırları.** Gordon Moore 1965'te yaptığı gözlemle, bir yonga üzerindeki bileşen sayısının yaklaşık her yıl iki katına çıktığını belirtti ve daha sonra bu öngörüyü yaklaşık iki yıl olarak güncelledi. On yıllar boyunca bu eğilim sürdü. Ancak transistörler atom boyutlarına yaklaştıkça fiziksel sınırlar belirginleşiyor. Sızıntı akımları artıyor, üretim maliyetleri çok yükseliyor ve her yeni üretim süreci eskisi kadar büyük kazanç sağlamıyor. Bu nedenle bazı uzmanlar Moore Yasası'nın yavaşladığını ya da sona yaklaştığını söylüyor.
+
+**Isı ve güç duvarı.** Transistör yoğunluğu arttıkça birim alandan çıkan ısı da artıyor. Bütün transistörlerin aynı anda tam hızda çalıştırılamaması ("koyu silikon" sorunu), tasarımcıları enerji verimliliğine ve akıllı güç yönetimine zorluyor.
+
+**Özelleşmiş ve heterojen tasarımlar.** Genel amaçlı çekirdeğin kazançları yavaşladıkça, belirli işlere özel hızlandırıcılar ön plana çıkıyor. Gelecekte tek bir yonga üzerinde farklı türde çekirdeklerin ve özel birimlerin birlikte çalıştığı heterojen yapıların daha da yaygınlaşması bekleniyor.
+
+**Yonga paketleme ve üç boyutlu tasarım.** Tek parça büyük yonga yerine, küçük yonga parçalarının (chiplet) bir paket içinde birleştirilmesi maliyeti ve verimi iyileştiriyor. Yongaların dikey olarak üst üste yığılması da veri yolu mesafelerini kısaltarak hız ve verimlilik kazandırabilir.
+
+**Açık komut kümeleri.** RISC-V gibi açık ve lisanssız komut kümesi mimarileri, üreticilere daha fazla özgürlük veriyor. Eğitimde ve gömülü sistemlerde hızla yaygınlaşıyor, ilerleyen yıllarda daha geniş alanlara yayılması bekleniyor.
+
+**Yeni hesaplama modelleri.** Kuantum bilgisayarlar ve nöromorfik (beyinden esinlenen) yongalar araştırılan alternatifler arasında. Ancak bunların klasik mikroişlemcilerin yerini almaktan çok, belirli problemlerde onları tamamlaması daha olası görünüyor.
+
+**Güvenlik.** Spekülatif yürütme gibi performansı artıran tekniklerin güvenlik açıklarına yol açabildiği Spectre ve Meltdown olaylarıyla görüldü. Gelecekteki tasarımlarda güvenlik, performansla birlikte baştan düşünülmesi gereken bir öncelik olacak.
+
+## 7. Sonuç
+
+Mikroişlemciler, birkaç bin transistörlü 4 bitlik bir hesap makinesi yongasından milyarlarca transistör barındıran çok çekirdekli sistemlere kadar çok kısa sürede büyük bir yol kat etti. ALU, kontrol birimi ve yazmaçlar gibi temel kavramlar değişmedi, ancak bunların etrafındaki mühendislik inanılmaz derecede karmaşıklaştı. x86 ve ARM karşılaştırması bize, aynı amaca farklı felsefelerle ulaşılabildiğini gösteriyor. Geleceğin ise tek bir hızlı çekirdekten çok, özelleşmiş, verimli ve birlikte çalışan bileşenlerde olduğu görülüyor. Bu çalışma sırasında en çok dikkatimi çeken nokta, performansın artık sadece saat hızıyla değil, enerji verimliliği ve akıllı mimari tercihlerle belirlenmesi oldu.
+
+## 8. Kaynakça
+
+1. Patterson, D. A. ve Hennessy, J. L. *Computer Organization and Design: The Hardware/Software Interface*. Morgan Kaufmann.
+2. Hennessy, J. L. ve Patterson, D. A. *Computer Architecture: A Quantitative Approach*. Morgan Kaufmann.
+3. Stallings, W. *Computer Organization and Architecture: Designing for Performance*. Pearson.
+4. Tanenbaum, A. S. ve Austin, T. *Structured Computer Organization*. Pearson.
+5. Moore, G. E. (1965). Cramming more components onto integrated circuits. *Electronics*, 38(8), 114–117.
+6. Intel Corporation. Intel 4004 ve mikroişlemci tarihçesi hakkındaki kurumsal arşiv sayfaları. https://www.intel.com
+7. Arm Ltd. Arm mimarisi ve ürün ailesine ilişkin resmi belgeler. https://www.arm.com
+8. Computer History Museum. Mikroişlemci tarihi koleksiyonu. https://computerhistory.org
+
+## Görseller
+
+Bu çalışmada kullanılacak şema ve tablolar `images/` klasöründe saklanacaktır.
